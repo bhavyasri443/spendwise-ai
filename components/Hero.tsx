@@ -1,4 +1,19 @@
+"use client";
 export default function Hero() {
+  const scrollToAudit = () => {
+    const section = document.getElementById("audit-section");
+
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleDemo = () => {
+    alert("Demo feature coming soon!");
+  };
+
   return (
     <section className="py-24 px-6 text-center">
 
@@ -19,11 +34,17 @@ export default function Hero() {
 
         <div className="mt-10 flex flex-col md:flex-row items-center justify-center gap-4">
 
-          <button className="bg-white text-black px-8 py-4 rounded-2xl font-semibold hover:scale-105 transition">
+          <button
+            onClick={scrollToAudit}
+            className="bg-white text-black px-8 py-4 rounded-2xl font-semibold hover:scale-105 transition"
+          >
             Run Free Audit
           </button>
 
-          <button className="border border-zinc-700 px-8 py-4 rounded-2xl text-white hover:bg-zinc-900 transition">
+          <button
+            onClick={handleDemo}
+            className="border border-zinc-700 px-8 py-4 rounded-2xl text-white hover:bg-zinc-900 transition"
+          >
             View Demo
           </button>
 

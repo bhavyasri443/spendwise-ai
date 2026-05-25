@@ -13,7 +13,10 @@ export default function Home() {
       <Hero />
       <Stats />
       <Features />
-      <SpendForm />
+      <section id="audit-section">
+        <SpendForm />
+        </section>
+        
       <CTA />
       <Footer />
     </main>
