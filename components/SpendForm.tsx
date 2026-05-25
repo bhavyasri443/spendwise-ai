@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { pricingData } from "@/data/pricing";
+import { supabase } from "@/lib/supabase";
 
 const plans: any = {
   chatgpt: ["plus", "team", "enterprise"],
@@ -30,6 +31,7 @@ export default function SpendForm() {
   ]);
 
   const [results, setResults] = useState<any[]>([]);
+  const [email, setEmail] = useState("");
 
   useEffect(() => {
     const savedTools =
@@ -86,6 +88,20 @@ export default function SpendForm() {
 
     setTools(updated);
   };
+  const saveAudit = async (
+  totalSavings: number
+) => {
+
+  if (!email) return;
+
+  await supabase.from("audits").insert([
+    {
+      email,
+      tools,
+      total_savings: totalSavings,
+    },
+  ]);
+};
 
   const generateAudit = () => {
 
@@ -130,6 +146,13 @@ export default function SpendForm() {
     });
 
     setResults(auditResults);
+    const totalSavings =
+  auditResults.reduce(
+    (acc, item) => acc + item.savings,
+    0
+  );
+
+saveAudit(totalSavings);
   };
 
   return (
@@ -236,6 +259,17 @@ export default function SpendForm() {
             ))}
 
           </div>
+          <div className="mt-8">
+
+  <input
+    type="email"
+    placeholder="Enter your email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    className="w-full bg-black border border-zinc-700 rounded-2xl p-4"
+  />
+
+</div>
 
           <div className="flex flex-col md:flex-row gap-4 mt-8">
 
