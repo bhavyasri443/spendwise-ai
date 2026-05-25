@@ -77,3 +77,38 @@
 - Store audit reports in database
 - Create shareable audit result links
 - Start AI-generated summary integration
+
+## Day 4 — 2026-05-25
+
+**Hours worked:** 7
+
+**What I did:**
+- Integrated Supabase backend into the application
+- Created audits database table with proper schema
+- Added email capture functionality
+- Connected frontend audit generation to database storage
+- Configured Row Level Security policies for insert access
+- Successfully stored audit reports in Supabase database
+- Improved understanding of backend integration workflows
+
+**What I learned:**
+- Learned how Supabase works as a Backend-as-a-Service platform
+- Learned how environment variables are used securely in Next.js
+- Improved understanding of API integration and database persistence
+- Learned how RLS policies affect frontend database operations
+
+**Challenges faced:**
+- Initial confusion with Supabase UI and API configuration
+- Debugging frontend breakage during backend integration
+- Understanding Row Level Security policies
+
+**How I solved them:**
+- Rebuilt integration step-by-step
+- Used isolated testing after every setup stage
+- Added insert policy to allow frontend audit storage
+
+**Plan for tomorrow:**
+- Improve audit analytics UI
+- Add charts and savings summaries
+- Create downloadable audit reports
+- Improve recommendation intelligence
