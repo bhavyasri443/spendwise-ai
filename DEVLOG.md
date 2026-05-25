@@ -49,3 +49,31 @@
 - Add multiple dynamic tool entries
 - Store audit state using localStorage
 - Begin backend setup with Supabase
+
+## Day 3 — 2026-05-23
+
+**Hours worked:** 6
+
+**What I did:**
+- Refactored the AI Spend Audit form to support multiple tools dynamically
+- Added add/remove tool functionality
+- Replaced manual plan text input with controlled dropdown menus
+- Improved the recommendation engine structure for better scalability
+- Added automatic plan switching based on selected tool
+- Implemented localStorage persistence so audit data remains after page refresh
+- Improved the overall UI structure and user experience of the audit section
+
+**What I learned:**
+- Learned better approaches for managing dynamic form arrays in React
+- Improved understanding of scalable frontend state management
+- Learned how localStorage can improve user experience in SaaS products
+
+**Blockers / what I'm stuck on:**
+- Need to improve audit logic to support more advanced financial recommendations
+- Need backend integration to persist audit reports permanently
+
+**Plan for tomorrow:**
+- Setup Supabase backend
+- Store audit reports in database
+- Create shareable audit result links
+- Start AI-generated summary integration
