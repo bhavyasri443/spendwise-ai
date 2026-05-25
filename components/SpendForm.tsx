@@ -1,118 +1,296 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { pricingData } from "@/data/pricing";
+
+const plans: any = {
+  chatgpt: ["plus", "team", "enterprise"],
+  claude: ["pro", "team", "enterprise"],
+  cursor: ["pro", "business", "enterprise"],
+  copilot: ["individual", "business", "enterprise"],
+  gemini: ["pro", "ultra"],
+};
+
+const toolOptions = [
+  "chatgpt",
+  "claude",
+  "cursor",
+  "copilot",
+  "gemini",
+];
 
 export default function SpendForm() {
 
-  const [tool, setTool] = useState("chatgpt");
-  const [plan, setPlan] = useState("plus");
-  const [seats, setSeats] = useState(1);
+  const [tools, setTools] = useState([
+    {
+      tool: "chatgpt",
+      plan: "plus",
+      seats: 1,
+    },
+  ]);
 
-  const [result, setResult] = useState<any>(null);
+  const [results, setResults] = useState<any[]>([]);
+
+  useEffect(() => {
+    const savedTools =
+      localStorage.getItem("audit-tools");
+
+    if (savedTools) {
+      setTools(JSON.parse(savedTools));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "audit-tools",
+      JSON.stringify(tools)
+    );
+  }, [tools]);
+
+  const addTool = () => {
+    setTools([
+      ...tools,
+      {
+        tool: "chatgpt",
+        plan: "plus",
+        seats: 1,
+      },
+    ]);
+  };
+
+  const removeTool = (index: number) => {
+    const updated = tools.filter(
+      (_, i) => i !== index
+    );
+
+    setTools(updated);
+  };
+
+  const updateTool = (
+    index: number,
+    field: string,
+    value: any
+  ) => {
+
+    const updated = [...tools];
+
+    updated[index] = {
+      ...updated[index],
+      [field]: value,
+    };
+
+    if (field === "tool") {
+      updated[index].plan =
+        plans[value][0];
+    }
+
+    setTools(updated);
+  };
 
   const generateAudit = () => {
 
-    const currentPrice =
-  (pricingData as any)[tool][plan] * seats;
+    const auditResults = tools.map((item: any) => {
 
-    let recommendation =
-      "Your current plan is optimized.";
+      const currentPrice =
+        (pricingData as any)[item.tool][item.plan] *
+        item.seats;
 
-    let savings = 0;
+      let recommendation =
+        "Your current plan is optimized.";
 
-    if (tool === "chatgpt" && plan === "team" && seats <= 2) {
-      recommendation =
-        "Switch to ChatGPT Plus for smaller teams.";
+      let savings = 0;
 
-      savings = 10 * seats;
-    }
+      if (
+        item.tool === "chatgpt" &&
+        item.plan === "team" &&
+        item.seats <= 2
+      ) {
+        recommendation =
+          "Switch to ChatGPT Plus for smaller teams.";
 
-    if (tool === "cursor" && plan === "business") {
-      recommendation =
-        "Cursor Pro may be sufficient for your needs.";
+        savings = 10 * item.seats;
+      }
 
-      savings = 20 * seats;
-    }
+      if (
+        item.tool === "cursor" &&
+        item.plan === "business"
+      ) {
+        recommendation =
+          "Cursor Pro may be sufficient for smaller teams.";
 
-    setResult({
-      currentPrice,
-      recommendation,
-      savings,
+        savings = 20 * item.seats;
+      }
+
+      return {
+        ...item,
+        currentPrice,
+        recommendation,
+        savings,
+      };
     });
+
+    setResults(auditResults);
   };
 
   return (
-    <section className="px-6 py-24">
+    <section
+      id="audit"
+      className="px-6 py-24"
+    >
 
-      <div className="max-w-4xl mx-auto bg-zinc-900 border border-zinc-800 rounded-3xl p-10">
+      <div className="max-w-5xl mx-auto">
 
-        <h2 className="text-4xl font-bold text-center">
-          AI Spend Audit
-        </h2>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-10">
 
-        <p className="text-zinc-400 text-center mt-4">
-          Analyze your AI subscriptions and discover savings opportunities.
-        </p>
+          <h2 className="text-4xl font-bold text-center">
+            AI Spend Audit
+          </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-10">
+          <p className="text-zinc-400 text-center mt-4">
+            Analyze your AI stack and reduce unnecessary spending.
+          </p>
 
-          <select
-            value={tool}
-            onChange={(e) => setTool(e.target.value)}
-            className="bg-black border border-zinc-700 rounded-xl p-4"
-          >
-            <option value="chatgpt">ChatGPT</option>
-            <option value="claude">Claude</option>
-            <option value="cursor">Cursor</option>
-            <option value="copilot">Copilot</option>
-            <option value="gemini">Gemini</option>
-          </select>
+          <div className="space-y-6 mt-10">
 
-          <input
-            type="text"
-            placeholder="Plan"
-            value={plan}
-            onChange={(e) => setPlan(e.target.value)}
-            className="bg-black border border-zinc-700 rounded-xl p-4"
-          />
+            {tools.map((tool: any, index: number) => (
 
-          <input
-            type="number"
-            placeholder="Seats"
-            value={seats}
-            onChange={(e) => setSeats(Number(e.target.value))}
-            className="bg-black border border-zinc-700 rounded-xl p-4"
-          />
+              <div
+                key={index}
+                className="bg-black border border-zinc-800 rounded-2xl p-6"
+              >
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                  <select
+                    value={tool.tool}
+                    onChange={(e) =>
+                      updateTool(
+                        index,
+                        "tool",
+                        e.target.value
+                      )
+                    }
+                    className="bg-zinc-900 border border-zinc-700 rounded-xl p-4"
+                  >
+
+                    {toolOptions.map((option) => (
+                      <option
+                        key={option}
+                        value={option}
+                      >
+                        {option}
+                      </option>
+                    ))}
+
+                  </select>
+
+                  <select
+                    value={tool.plan}
+                    onChange={(e) =>
+                      updateTool(
+                        index,
+                        "plan",
+                        e.target.value
+                      )
+                    }
+                    className="bg-zinc-900 border border-zinc-700 rounded-xl p-4"
+                  >
+
+                    {plans[tool.tool].map(
+                      (plan: string) => (
+                        <option
+                          key={plan}
+                          value={plan}
+                        >
+                          {plan}
+                        </option>
+                      )
+                    )}
+
+                  </select>
+
+                  <input
+                    type="number"
+                    value={tool.seats}
+                    onChange={(e) =>
+                      updateTool(
+                        index,
+                        "seats",
+                        Number(e.target.value)
+                      )
+                    }
+                    className="bg-zinc-900 border border-zinc-700 rounded-xl p-4"
+                  />
+
+                </div>
+
+                <button
+                  onClick={() => removeTool(index)}
+                  className="mt-4 text-red-400 text-sm hover:text-red-300"
+                >
+                  Remove
+                </button>
+
+              </div>
+
+            ))}
+
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-4 mt-8">
+
+            <button
+              onClick={addTool}
+              className="border border-zinc-700 px-6 py-4 rounded-2xl hover:bg-zinc-800 transition"
+            >
+              Add Another Tool
+            </button>
+
+            <button
+              onClick={generateAudit}
+              className="bg-white text-black px-6 py-4 rounded-2xl font-semibold hover:scale-105 transition"
+            >
+              Generate Audit
+            </button>
+
+          </div>
 
         </div>
 
-        <button
-          onClick={generateAudit}
-          className="mt-8 w-full bg-white text-black py-4 rounded-2xl font-semibold hover:scale-[1.01] transition"
-        >
-          Generate Audit
-        </button>
+        {results.length > 0 && (
 
-        {result && (
+          <div className="space-y-6 mt-10">
 
-          <div className="mt-10 bg-black border border-zinc-800 rounded-2xl p-6">
+            {results.map((result, index) => (
 
-            <h3 className="text-2xl font-bold">
-              Audit Results
-            </h3>
+              <div
+                key={index}
+                className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8"
+              >
 
-            <p className="text-zinc-400 mt-4">
-              Current Spend: ${result.currentPrice}/month
-            </p>
+                <h3 className="text-2xl font-bold capitalize">
+                  {result.tool}
+                </h3>
 
-            <p className="text-zinc-400 mt-2">
-              Recommendation: {result.recommendation}
-            </p>
+                <p className="text-zinc-400 mt-2">
+                  Current Spend:
+                  ${result.currentPrice}/month
+                </p>
 
-            <p className="text-green-400 mt-2 font-semibold">
-              Potential Savings: ${result.savings}/month
-            </p>
+                <p className="text-zinc-400 mt-2">
+                  Recommendation:
+                  {" "}
+                  {result.recommendation}
+                </p>
+
+                <p className="text-green-400 mt-2 font-semibold">
+                  Potential Savings:
+                  ${result.savings}/month
+                </p>
+
+              </div>
+
+            ))}
 
           </div>
 
